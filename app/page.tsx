@@ -1,5 +1,5 @@
 "use client"
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, act } from 'react';
 import Image from "next/image";
 
 // import { parse } from "@xwordly/xword-parser";
@@ -50,10 +50,10 @@ export default function Home() {
     if (!activeCell) return;
 
     if (activeCell.acrossClueNum != null) {
-      acrossClueRefs.current[activeCell.acrossClueNum]?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      acrossClueRefs.current[activeCell.acrossClueNum]?.scrollIntoView({ block: "start", behavior: "smooth" });
     }
     if (activeCell.downClueNum != null) {
-      downClueRefs.current[activeCell.downClueNum]?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      downClueRefs.current[activeCell.downClueNum]?.scrollIntoView({ block: "start", behavior: "smooth" });
     }
   }, [activeCell, activeOrientation]);
 
@@ -67,165 +67,222 @@ export default function Home() {
   
   const divs = cells.map(cell => {
 
-  const cornerNum = clueStartMap.get(`${cell.row}-${cell.col}`);
+    const cornerNum = clueStartMap.get(`${cell.row}-${cell.col}`);
 
-  // const activeCell = cells.find(c => c.id === activeCellId);
+    // const activeCell = cells.find(c => c.id === activeCellId);
 
-  const highlightedIds = new Set(
-    activeCell
-      ? cells
-          .filter(c =>
-            activeOrientation === "across"
-              ? c.row === activeCell.row && !c.isBlack && c.acrossClueNum == activeCell.acrossClueNum
-              : c.col === activeCell.col && !c.isBlack && c.downClueNum == activeCell.downClueNum
-          )
-          .map(c => c.id)
-      : []
-  );
-
-
-    // <div style={{display: "flex", flexDirection: "row", backgroundColor: "#141313"}}
-    //       key={row.id}
-    // >
-    return(
-      <div style={{border: "1px solid #777", width: "50px", "height": "50px"}} key={cell.id}>
-        <div
-            onClick={() => {
-              //TODO: Should not be able to click on black cells! 
-              //TODO: Click on a clue in the list, sets proper cell and clue as Active. 
-              console.log(highlightedIds)
-              if(!cell.isBlack) {
-                setActiveCell(cell);
-                inputRefs.current[cell.id]?.focus();
-              }
-            }}
-            // onClick={() => {
-            //  if(!cell.isBlack) setActiveCellId(cell.id); 
-            // }}
-
-
-
-            style={{
-              backgroundColor: cell.isBlack 
-                ? "black" 
-                : activeCell === cell
-                ? "#f9dc4a" 
-                : highlightedIds.has(cell.id)
-                ? "#a7d8f0"
-                : "white", 
-              margin: "0px", 
-              width: "50px", 
-              height: "50px",
-              outline: "none",
-              borderRight: "1px solid #777", borderBottom: "1px solid #777",
-            }}
-            key={cell.id} tabIndex={-1} 
-        >
-          <div style={{paddingTop: "1px", paddingLeft: "3px", fontSize: "13px", paddingBottom: "-10px", marginBottom: "-4px"}}>
-          {cornerNum ? cornerNum : ""} &nbsp;
-
-          
-          </div>
-
-          <input 
-
-              ref={(el) => {
-                inputRefs.current[cell.id] = el;
-              }}              
-              maxLength={1}
-              onFocus={(e) => {
-                // e.target.select();
-                setActiveCell(cell);
-              }}
-              type='text'
-              onKeyDown={(e) => {handleKey(e, cell)}}
-              onChange={() => {}}
-              value={cellValues[cell.id] || ""}
-
-              // contentEditable={!cell.isBlack ? true : false} 
-              
-              style={{
-                // backgroundColor: activeCellId === cell.id ? "#f9dc4a" : "transparent",
-                width:"48px", 
-                height: "33px", 
-                marginLeft: "1px",
-                textAlign: "center",
-                fontSize: "29px", 
-                lineHeight: 1, 
-                paddingTop: "2px", 
-                caretColor: "transparent", 
-                outline: "none",
-                textTransform: "uppercase",
-                
-              }}
-          />
-
-          
-          
-        </div>
-      </div>
-      
-    // )}
-
-    // </div>
+    const highlightedIds = new Set(
+      activeCell
+        ? cells
+            .filter(c =>
+              activeOrientation === "across"
+                ? c.row === activeCell.row && !c.isBlack && c.acrossClueNum == activeCell.acrossClueNum
+                : c.col === activeCell.col && !c.isBlack && c.downClueNum == activeCell.downClueNum
+            )
+            .map(c => c.id)
+        : []
     );
+
+
+      // <div style={{display: "flex", flexDirection: "row", backgroundColor: "#141313"}}
+      //       key={row.id}
+      // >
+      return(
+        <div style={{border: "1px solid #777", width: "50px", "height": "50px"}} key={cell.id}>
+          <div
+              onClick={() => {
+                //TODO: Should not be able to click on black cells! 
+                //TODO: Click on a clue in the list, sets proper cell and clue as Active. 
+                console.log(highlightedIds)
+                if(!cell.isBlack) {
+                  setActiveCell(cell);
+                  inputRefs.current[cell.id]?.focus();
+                } else {
+                  
+                }
+              }}
+              // onClick={() => {
+              //  if(!cell.isBlack) setActiveCellId(cell.id); 
+              // }}
+
+
+
+              style={{
+                backgroundColor: cell.isBlack 
+                  ? "black" 
+                  : activeCell === cell
+                  ? "#f9dc4a" 
+                  : highlightedIds.has(cell.id)
+                  ? "#a7d8f0"
+                  : "white", 
+                margin: "0px", 
+                width: "50px", 
+                height: "50px",
+                outline: "none",
+                borderRight: "1px solid #777", borderBottom: "1px solid #777",
+              }}
+              key={cell.id} tabIndex={-1} 
+          >
+            <div style={{paddingTop: "1px", paddingLeft: "3px", fontSize: "13px", paddingBottom: "-10px", marginBottom: "-4px"}}>
+            {cornerNum ? cornerNum : ""} &nbsp;
+
+            
+            </div>
+
+            <input 
+
+                ref={(el) => {
+                  inputRefs.current[cell.id] = el;
+                }}              
+                maxLength={1}
+                onFocus={(e) => {
+                  // e.target.select();
+                  setActiveCell(cell);
+                }}
+                type='text'
+                onKeyDown={(e) => {handleKey(e, cell)}}
+                onChange={() => {}}
+                value={cellValues[cell.id] || ""}
+
+                // contentEditable={!cell.isBlack ? true : false} 
+                
+                style={{
+                  // backgroundColor: activeCellId === cell.id ? "#f9dc4a" : "transparent",
+                  width:"48px", 
+                  height: "33px", 
+                  marginLeft: "1px",
+                  textAlign: "center",
+                  fontSize: "29px", 
+                  lineHeight: 1, 
+                  paddingTop: "2px", 
+                  caretColor: "transparent", 
+                  outline: "none",
+                  textTransform: "uppercase",
+                  
+                }}
+            />
+
+            
+            
+          </div>
+        </div>
+        
+      // )}
+
+      // </div>
+      );
   });
 
   //TODO: Stylize clue lists properly! 
-  const divsAcross = cluesAcross.map(clue => (
+  const divsAcross = cluesAcross.map(clue => {
+
+    return (
     <div 
       key={clue.number}
       ref={el => { acrossClueRefs.current[clue.number] = el; }}
       style={{
-        padding: "5px",
+        position: "relative",
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "flex-start",
+        padding: "5px 5px 5px 12px",
         backgroundColor: activeOrientation === "across" && clue.number == activeCell?.acrossClueNum
           ? "#a7d8f0"
           : "transparent"
       }}
+      onClick={() => {
+        const currentCell = cells.find(
+          c => c.acrossClueNum === clue.number && c.col == clue.startCol
+        )
+
+        setActiveOrientation("across")
+        console.log(acrossClueRefs.current[clue.number])
+        if(currentCell != undefined) {
+          setActiveCell(currentCell)
+          inputRefs.current[currentCell.id]?.focus();
+        }
+      }}
+
       
     >
       <div style={{
-        display: "inline", 
-        padding: "7px",
+        position: "absolute",
+        left: 0,
+        top: 0,
+        bottom: 0,
+        width: "10px",
+        borderRadius: "2px",
         backgroundColor: activeOrientation === "down" && clue.number == activeCell?.acrossClueNum
-          ? "#a7d8f0" 
-          : "transparent"
-        }}
-      >
-        {clue.number}
-      </div>
-      <div style={{display: "inline"}}>
-        {clue.clue}
-      </div>
-    </div>
-  ))
+          ? "#a7d8f0" : "transparent",
 
-  const divsDown = cluesDown.map(clue => (
-    <div 
-      key={clue.number} 
-      ref={el => { downClueRefs.current[clue.number] = el; }}
-      style={{
-        padding: "5px",
-        backgroundColor: activeOrientation === "down" && clue.number == activeCell?.downClueNum
-          ? "#a7d8f0"
-          : "transparent"
-      }}
-    >
-      <div style={{
-        display: "inline", 
-        padding: "7px",
-        backgroundColor: activeOrientation === "across" && clue.number == activeCell?.downClueNum
-          ? "#a7d8f0" 
-          : "transparent"
+      }} />
+        <span style={{
+          flexShrink: 0,
+          minWidth: "24px",
+          textAlign: "right",
+          padding: "0 4px 0 4px",
+          fontWeight: "bold",
+        }}>{clue.number}</span>
+        <div style={{ flex: 1, overflowWrap: "break-word", wordBreak: "break-word" }}>
+          {clue.clue}
+        </div>
+    </div>
+    );
+  })
+
+  const divsDown = cluesDown.map(clue => {
+
+    return(
+      <div 
+        key={clue.number} 
+        ref={el => { downClueRefs.current[clue.number] = el; }}
+        style={{
+          position: "relative",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "flex-start",
+          padding: "5px 5px 5px 12px",
+          backgroundColor: activeOrientation === "down" && clue.number == activeCell?.downClueNum
+            ? "#a7d8f0" : "transparent",
+        }}
+
+        onClick={() => {
+          const currentCell = cells.find(
+            c => c.downClueNum === clue.number && c.row == clue.startRow
+          )
+          setActiveOrientation("down")
+          if(currentCell != undefined) {
+            setActiveCell(currentCell)
+            inputRefs.current[currentCell.id]?.focus();
+          }
+
         }}
       >
-        {clue.number}
+          <div style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            bottom: 0,
+            width: "10px",
+            borderRadius: "2px",
+            backgroundColor: activeOrientation === "across" && clue.number == activeCell?.downClueNum
+              ? "#a7d8f0" : "transparent",
+          }} />
+          <span style={{
+            flexShrink: 0,
+            minWidth: "24px",
+            textAlign: "right",
+            padding: "0 4px 0 4px",
+            fontWeight: "bold",
+          }}>{clue.number}</span>
+
+          <div style={{ flex: 1, overflowWrap: "break-word", wordBreak: "break-word" }}>
+            {clue.clue}
+          </div>
+
       </div>
-      <div style={{display: "inline"}}>
-        {clue.clue}
-      </div>
-    </div>
-  ))
+    )
+})
 
 
   const handleKey = (e: React.KeyboardEvent<HTMLInputElement>, cell: any) => {
@@ -382,7 +439,6 @@ export default function Home() {
       <main>
 
         <div style={{display: "flex"}}>
-          
           <div style={{margin: "40px 50px 0px 40px", width: "fit-content"}}>
             <div style={{
               display: "grid", 
@@ -403,14 +459,14 @@ export default function Home() {
           <div>
             <h3 style={{textAlign: "left", paddingLeft: "14px"}}><b>ACROSS</b></h3>
             <hr style={{color: "lightgray"}}></hr>
-            <ol style={{overflowY: "scroll", height: "700px", overflowX: "scroll", width: "300px"}}>
+            <ol style={{overflowY: "scroll", height: "700px", overflowX: "hidden", width: "300px"}}>
               <li>{divsAcross}</li>
             </ol>
           </div>
           <div style={{marginLeft: "30px"}}>
             <h3 style={{textAlign: "left", paddingLeft: "14px"}}><b>DOWN</b></h3>
             <hr style={{color: "lightgrey"}}></hr>
-            <ol style={{overflowY: "scroll", height: "700px", width: "300px"}}>
+            <ol style={{overflowY: "scroll", height: "700px", overflowX: "hidden", width: "300px"}}>
               <li>{divsDown}</li>
             </ol>
           </div> 
