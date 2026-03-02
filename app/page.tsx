@@ -1,5 +1,5 @@
 "use client"
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Image from "next/image";
 
 // import { parse } from "@xwordly/xword-parser";
@@ -37,9 +37,26 @@ const cluesDown = puzzle.clues.down
 export default function Home() {
 
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
-  const [activeCellId, setActiveCellId] = useState<string | null>(null);
+  const acrossClueRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const downClueRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+
+
+
+  const [activeCell, setActiveCell] = useState<typeof cells[0] | null>(null);
   const [activeOrientation, setActiveOrientation] = useState<"across" | "down">("across") 
   const [cellValues, setCellValues] = useState<{ [key: string]: string }>({});
+
+  useEffect(() => {
+    if (!activeCell) return;
+
+    if (activeCell.acrossClueNum != null) {
+      acrossClueRefs.current[activeCell.acrossClueNum]?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+    if (activeCell.downClueNum != null) {
+      downClueRefs.current[activeCell.downClueNum]?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+  }, [activeCell, activeOrientation]);
+
 
   const clueStartMap = new Map<string, number>();
   [...puzzle.clues.across, ...puzzle.clues.down].forEach(clue => {
@@ -52,7 +69,7 @@ export default function Home() {
 
   const cornerNum = clueStartMap.get(`${cell.row}-${cell.col}`);
 
-  const activeCell = cells.find(c => c.id === activeCellId);
+  // const activeCell = cells.find(c => c.id === activeCellId);
 
   const highlightedIds = new Set(
     activeCell
@@ -74,9 +91,11 @@ export default function Home() {
       <div style={{border: "1px solid #777", width: "50px", "height": "50px"}} key={cell.id}>
         <div
             onClick={() => {
+              //TODO: Should not be able to click on black cells! 
+              //TODO: Click on a clue in the list, sets proper cell and clue as Active. 
               console.log(highlightedIds)
               if(!cell.isBlack) {
-                setActiveCellId(cell.id);
+                setActiveCell(cell);
                 inputRefs.current[cell.id]?.focus();
               }
             }}
@@ -89,7 +108,7 @@ export default function Home() {
             style={{
               backgroundColor: cell.isBlack 
                 ? "black" 
-                : activeCellId === cell.id 
+                : activeCell === cell
                 ? "#f9dc4a" 
                 : highlightedIds.has(cell.id)
                 ? "#a7d8f0"
@@ -116,7 +135,7 @@ export default function Home() {
               maxLength={1}
               onFocus={(e) => {
                 // e.target.select();
-                setActiveCellId(cell.id);
+                setActiveCell(cell);
               }}
               type='text'
               onKeyDown={(e) => {handleKey(e, cell)}}
@@ -152,10 +171,27 @@ export default function Home() {
     );
   });
 
-
+  //TODO: Stylize clue lists properly! 
   const divsAcross = cluesAcross.map(clue => (
-    <div key={clue.number} style={{padding: "5px"}}>
-      <div style={{display: "inline", padding: "7px"}}>
+    <div 
+      key={clue.number}
+      ref={el => { acrossClueRefs.current[clue.number] = el; }}
+      style={{
+        padding: "5px",
+        backgroundColor: activeOrientation === "across" && clue.number == activeCell?.acrossClueNum
+          ? "#a7d8f0"
+          : "transparent"
+      }}
+      
+    >
+      <div style={{
+        display: "inline", 
+        padding: "7px",
+        backgroundColor: activeOrientation === "down" && clue.number == activeCell?.acrossClueNum
+          ? "#a7d8f0" 
+          : "transparent"
+        }}
+      >
         {clue.number}
       </div>
       <div style={{display: "inline"}}>
@@ -165,11 +201,27 @@ export default function Home() {
   ))
 
   const divsDown = cluesDown.map(clue => (
-    <div key={clue.number} style={{padding: "5px"}}>
-      <div style={{display: "inline", padding: "7px"}}>
+    <div 
+      key={clue.number} 
+      ref={el => { downClueRefs.current[clue.number] = el; }}
+      style={{
+        padding: "5px",
+        backgroundColor: activeOrientation === "down" && clue.number == activeCell?.downClueNum
+          ? "#a7d8f0"
+          : "transparent"
+      }}
+    >
+      <div style={{
+        display: "inline", 
+        padding: "7px",
+        backgroundColor: activeOrientation === "across" && clue.number == activeCell?.downClueNum
+          ? "#a7d8f0" 
+          : "transparent"
+        }}
+      >
         {clue.number}
       </div>
-      <div style={{display: "inline", overflowBlock: "revert-layer"}}>
+      <div style={{display: "inline"}}>
         {clue.clue}
       </div>
     </div>
@@ -224,15 +276,19 @@ export default function Home() {
       }
     }
     if(e.key == "ArrowRight") {
+      setActiveOrientation("across");
       moveCell(cell, "arrowright")
     }
     if(e.key == "ArrowLeft") {
+      setActiveOrientation("across")
       moveCell(cell, "arrowleft")
     }
     if(e.key == "ArrowUp") {
+      setActiveOrientation("down")
       moveCell(cell, "arrowup")
     }
     if(e.key == "ArrowDown") {
+      setActiveOrientation("down")
       moveCell(cell, "arrowdown")
     }
   }
@@ -314,7 +370,7 @@ export default function Home() {
 
     if(nextCell) {
       inputRefs.current[nextCell.id]?.focus();
-      setActiveCellId(nextCell.id)
+      setActiveCell(nextCell)
     }
   };
 
