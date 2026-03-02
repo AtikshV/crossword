@@ -38,6 +38,7 @@ export default function Home() {
 
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
   const [activeCellId, setActiveCellId] = useState<string | null>(null);
+  const [activeOrientation, setActiveOrientation] = useState<"across" | "down">("across") 
   const [cellValues, setCellValues] = useState<{ [key: string]: string }>({});
 
   const clueStartMap = new Map<string, number>();
@@ -51,6 +52,20 @@ export default function Home() {
 
   const cornerNum = clueStartMap.get(`${cell.row}-${cell.col}`);
 
+  const activeCell = cells.find(c => c.id === activeCellId);
+
+  const highlightedIds = new Set(
+    activeCell
+      ? cells
+          .filter(c =>
+            activeOrientation === "across"
+              ? c.row === activeCell.row && !c.isBlack && c.acrossClueNum == activeCell.acrossClueNum
+              : c.col === activeCell.col && !c.isBlack && c.downClueNum == activeCell.downClueNum
+          )
+          .map(c => c.id)
+      : []
+  );
+
 
     // <div style={{display: "flex", flexDirection: "row", backgroundColor: "#141313"}}
     //       key={row.id}
@@ -59,6 +74,7 @@ export default function Home() {
       <div style={{border: "1px solid #777", width: "50px", "height": "50px"}} key={cell.id}>
         <div
             onClick={() => {
+              console.log(highlightedIds)
               if(!cell.isBlack) {
                 setActiveCellId(cell.id);
                 inputRefs.current[cell.id]?.focus();
@@ -71,7 +87,13 @@ export default function Home() {
 
 
             style={{
-              backgroundColor: cell.isBlack ? "black" : activeCellId === cell.id ? "#f9dc4a" : "white", 
+              backgroundColor: cell.isBlack 
+                ? "black" 
+                : activeCellId === cell.id 
+                ? "#f9dc4a" 
+                : highlightedIds.has(cell.id)
+                ? "#a7d8f0"
+                : "white", 
               margin: "0px", 
               width: "50px", 
               height: "50px",
@@ -155,12 +177,22 @@ export default function Home() {
 
 
   const handleKey = (e: React.KeyboardEvent<HTMLInputElement>, cell: any) => {
+    
+    if(e.metaKey || e.ctrlKey) return;
     console.log(e.key)
+    if (e.key === " ") {
+      e.preventDefault(); // stops the page from scrolling
+      setActiveOrientation(prev => prev === "across" ? "down" : "across");
+    }
     if (e.key.length === 1 && /[a-zA-Z]/.test(e.key)) {
       e.preventDefault();
       const value = e.key.toUpperCase();
       setCellValues(prev => ({ ...prev, [cell.id]: value }));
-      moveCell(cell, "right");
+      if(activeOrientation === "across") {
+        moveCell(cell, "right");
+      } else {
+        moveCell(cell, "down");
+      }
     }
     if(e.key == "Backspace") {
       e.preventDefault()
@@ -170,14 +202,24 @@ export default function Home() {
 
       if(cellValues[cell.id] != "") {
           setCellValues(prev => ({...prev, [cell.id]: ""}))
-      } else {
+      } else if(activeOrientation === "across") {
         const prevCell = cells.find(
           c => c.col === cell.col - 1 && c.row === cell.row && !c.isBlack
         );
 
         if(prevCell) {
           setCellValues(prev => ({...prev, [prevCell.id]: ""}))
-          moveCell(cell, "left")
+          moveCell(cell, "left");
+        }
+
+      } else if (activeOrientation === "down") {
+        const prevCell = cells.find(
+          c => c.row === cell.row - 1 && c.col === cell.col && !c.isBlack
+        );
+
+        if(prevCell) {
+          setCellValues(prev => ({...prev, [prevCell.id]: ""}))
+          moveCell(cell, "up");
         }
       }
     }
@@ -188,10 +230,10 @@ export default function Home() {
       moveCell(cell, "arrowleft")
     }
     if(e.key == "ArrowUp") {
-      moveCell(cell, "up")
+      moveCell(cell, "arrowup")
     }
     if(e.key == "ArrowDown") {
-      moveCell(cell, "down")
+      moveCell(cell, "arrowdown")
     }
   }
 
@@ -208,6 +250,17 @@ export default function Home() {
         nextCell = cells.find(
           c => c.col == currentCell.col - 1 && !c.isBlack && c.row == currentCell.row && currentCell.col - 1 >= 0 
         );
+        break;
+      case "down":
+        nextCell = cells.find(
+          c => c.col == currentCell.col && c.row == currentCell.row + 1 && !c.isBlack
+        );
+        break;
+      case "up":
+        nextCell = cells.find(
+          c => c.col == currentCell.col && c.row == currentCell.row - 1 && !c.isBlack
+        );
+        console.log("NEXT CELL" + nextCell)
         break;
       case "arrowleft": 
         nextCell = cells.find(
@@ -231,7 +284,7 @@ export default function Home() {
           );
         }
         break;
-      case "up":
+      case "arrowup":
         nextCell = cells.find(
           c => c.col == currentCell.col && c.row == currentCell.row - 1
         );
@@ -241,7 +294,7 @@ export default function Home() {
             c => c.col == currentCell.col && c.row == nextCell.row - 1
           )
         break;
-      case "down": 
+      case "arrowdown": 
         nextCell = cells.find(
           c => c.col == currentCell.col && c.row == currentCell.row + 1
         );
