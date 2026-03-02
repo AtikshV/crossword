@@ -9,7 +9,7 @@ import { setDefaultAutoSelectFamily } from 'net';
 import { setHeapSnapshotNearHeapLimit } from 'v8';
 import { CellType } from '@xwordly/xword-parser';
 import { IncomingMessage } from 'http';
-import puzzle from './testPuz.json'
+import puzzle from './testMini.json'
 import { TestCache } from '@mui/x-data-grid/internals';
 import next from 'next';
 import { Preahvihear } from 'next/font/google';

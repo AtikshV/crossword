@@ -1,0 +1,364 @@
+{
+  "meta": {
+    "title": "Monday, March 02, 2026",
+    "author": "Joel Fagliano",
+    "copyright": "2026",
+    "width": 5,
+    "height": 5,
+    "hasRebus": false,
+    "hasMarkup": false
+  },
+  "cells": [
+    {
+      "id": "cell-0-0",
+      "row": 0,
+      "col": 0,
+      "isBlack": false,
+      "solution": "S",
+      "isRebus": false,
+      "fill": "",
+      "acrossClueNum": 1,
+      "downClueNum": 1
+    },
+    {
+      "id": "cell-0-1",
+      "row": 0,
+      "col": 1,
+      "isBlack": false,
+      "solution": "U",
+      "isRebus": false,
+      "fill": "",
+      "acrossClueNum": 1,
+      "downClueNum": 2
+    },
+    {
+      "id": "cell-0-2",
+      "row": 0,
+      "col": 2,
+      "isBlack": false,
+      "solution": "R",
+      "isRebus": false,
+      "fill": "",
+      "acrossClueNum": 1,
+      "downClueNum": 3
+    },
+    {
+      "id": "cell-0-3",
+      "row": 0,
+      "col": 3,
+      "isBlack": false,
+      "solution": "E",
+      "isRebus": false,
+      "fill": "",
+      "acrossClueNum": 1,
+      "downClueNum": 4
+    },
+    {
+      "id": "cell-0-4",
+      "row": 0,
+      "col": 4,
+      "isBlack": true,
+      "solution": null,
+      "isRebus": false,
+      "fill": null,
+      "acrossClueNum": null,
+      "downClueNum": null
+    },
+    {
+      "id": "cell-1-0",
+      "row": 1,
+      "col": 0,
+      "isBlack": false,
+      "solution": "I",
+      "isRebus": false,
+      "fill": "",
+      "acrossClueNum": 5,
+      "downClueNum": 1
+    },
+    {
+      "id": "cell-1-1",
+      "row": 1,
+      "col": 1,
+      "isBlack": false,
+      "solution": "T",
+      "isRebus": false,
+      "fill": "",
+      "acrossClueNum": 5,
+      "downClueNum": 2
+    },
+    {
+      "id": "cell-1-2",
+      "row": 1,
+      "col": 2,
+      "isBlack": false,
+      "solution": "E",
+      "isRebus": false,
+      "fill": "",
+      "acrossClueNum": 5,
+      "downClueNum": 3
+    },
+    {
+      "id": "cell-1-3",
+      "row": 1,
+      "col": 3,
+      "isBlack": false,
+      "solution": "M",
+      "isRebus": false,
+      "fill": "",
+      "acrossClueNum": 5,
+      "downClueNum": 4
+    },
+    {
+      "id": "cell-1-4",
+      "row": 1,
+      "col": 4,
+      "isBlack": true,
+      "solution": null,
+      "isRebus": false,
+      "fill": null,
+      "acrossClueNum": null,
+      "downClueNum": null
+    },
+    {
+      "id": "cell-2-0",
+      "row": 2,
+      "col": 0,
+      "isBlack": false,
+      "solution": "P",
+      "isRebus": false,
+      "fill": "",
+      "acrossClueNum": 6,
+      "downClueNum": 1
+    },
+    {
+      "id": "cell-2-1",
+      "row": 2,
+      "col": 1,
+      "isBlack": false,
+      "solution": "I",
+      "isRebus": false,
+      "fill": "",
+      "acrossClueNum": 6,
+      "downClueNum": 2
+    },
+    {
+      "id": "cell-2-2",
+      "row": 2,
+      "col": 2,
+      "isBlack": false,
+      "solution": "L",
+      "isRebus": false,
+      "fill": "",
+      "acrossClueNum": 6,
+      "downClueNum": 3
+    },
+    {
+      "id": "cell-2-3",
+      "row": 2,
+      "col": 3,
+      "isBlack": false,
+      "solution": "O",
+      "isRebus": false,
+      "fill": "",
+      "acrossClueNum": 6,
+      "downClueNum": 4
+    },
+    {
+      "id": "cell-2-4",
+      "row": 2,
+      "col": 4,
+      "isBlack": false,
+      "solution": "T",
+      "isRebus": false,
+      "fill": "",
+      "acrossClueNum": 6,
+      "downClueNum": 7
+    },
+    {
+      "id": "cell-3-0",
+      "row": 3,
+      "col": 0,
+      "isBlack": true,
+      "solution": null,
+      "isRebus": false,
+      "fill": null,
+      "acrossClueNum": null,
+      "downClueNum": null
+    },
+    {
+      "id": "cell-3-1",
+      "row": 3,
+      "col": 1,
+      "isBlack": false,
+      "solution": "L",
+      "isRebus": false,
+      "fill": "",
+      "acrossClueNum": 8,
+      "downClueNum": 2
+    },
+    {
+      "id": "cell-3-2",
+      "row": 3,
+      "col": 2,
+      "isBlack": false,
+      "solution": "A",
+      "isRebus": false,
+      "fill": "",
+      "acrossClueNum": 8,
+      "downClueNum": 3
+    },
+    {
+      "id": "cell-3-3",
+      "row": 3,
+      "col": 3,
+      "isBlack": false,
+      "solution": "T",
+      "isRebus": false,
+      "fill": "",
+      "acrossClueNum": 8,
+      "downClueNum": 4
+    },
+    {
+      "id": "cell-3-4",
+      "row": 3,
+      "col": 4,
+      "isBlack": false,
+      "solution": "E",
+      "isRebus": false,
+      "fill": "",
+      "acrossClueNum": 8,
+      "downClueNum": 7
+    },
+    {
+      "id": "cell-4-0",
+      "row": 4,
+      "col": 0,
+      "isBlack": true,
+      "solution": null,
+      "isRebus": false,
+      "fill": null,
+      "acrossClueNum": null,
+      "downClueNum": null
+    },
+    {
+      "id": "cell-4-1",
+      "row": 4,
+      "col": 1,
+      "isBlack": false,
+      "solution": "E",
+      "isRebus": false,
+      "fill": "",
+      "acrossClueNum": 9,
+      "downClueNum": 2
+    },
+    {
+      "id": "cell-4-2",
+      "row": 4,
+      "col": 2,
+      "isBlack": false,
+      "solution": "X",
+      "isRebus": false,
+      "fill": "",
+      "acrossClueNum": 9,
+      "downClueNum": 3
+    },
+    {
+      "id": "cell-4-3",
+      "row": 4,
+      "col": 3,
+      "isBlack": false,
+      "solution": "E",
+      "isRebus": false,
+      "fill": "",
+      "acrossClueNum": 9,
+      "downClueNum": 4
+    },
+    {
+      "id": "cell-4-4",
+      "row": 4,
+      "col": 4,
+      "isBlack": false,
+      "solution": "D",
+      "isRebus": false,
+      "fill": "",
+      "acrossClueNum": 9,
+      "downClueNum": 7
+    }
+  ],
+  "clues": {
+    "across": [
+      {
+        "number": 1,
+        "clue": "\"Yeah, why not!\"",
+        "startRow": 0,
+        "startCol": 0,
+        "length": 4
+      },
+      {
+        "number": 5,
+        "clue": "Collector's ___",
+        "startRow": 1,
+        "startCol": 0,
+        "length": 4
+      },
+      {
+        "number": 6,
+        "clue": "Worker who frequently takes off",
+        "startRow": 2,
+        "startCol": 0,
+        "length": 5
+      },
+      {
+        "number": 8,
+        "clue": "Stressful way to run",
+        "startRow": 3,
+        "startCol": 1,
+        "length": 4
+      },
+      {
+        "number": 9,
+        "clue": "Crossed (out)",
+        "startRow": 4,
+        "startCol": 1,
+        "length": 4
+      }
+    ],
+    "down": [
+      {
+        "number": 1,
+        "clue": "Tiny drink",
+        "startRow": 0,
+        "startCol": 0,
+        "length": 3
+      },
+      {
+        "number": 2,
+        "clue": "Useful ... or a useful draw in Scrabble when you have a \"Q\"",
+        "startRow": 0,
+        "startCol": 1,
+        "length": 5
+      },
+      {
+        "number": 3,
+        "clue": "Chill",
+        "startRow": 0,
+        "startCol": 2,
+        "length": 5
+      },
+      {
+        "number": 4,
+        "clue": "Be expressive with one's feelings",
+        "startRow": 0,
+        "startCol": 3,
+        "length": 5
+      },
+      {
+        "number": 7,
+        "clue": "TV's \"___ Lasso\"",
+        "startRow": 2,
+        "startCol": 4,
+        "length": 3
+      }
+    ]
+  }
+}
