@@ -21,16 +21,32 @@ export default function Home() {
   const [activeCell, setActiveCell] = useState<typeof cells[0] | null>(null);
   const [activeOrientation, setActiveOrientation] = useState<"across" | "down">("across") 
 
-  const [cellValues, setCellValues] = useState<{ [key: string]: string }>( () => {
-    if (typeof window === "undefined") return {}
+  const [cellValues, setCellValues] = useState<{ [key: string]: string }>({});
+  const [incorrectCells, setIncorrectCells] = useState<Set<string>>(new Set());
+  const [correctCells, setCorrectCells] = useState<Set<string>>(new Set());
 
-    try { 
+  //loads localstorage on rerender
+  useEffect(() => {
+    try {
       const saved = localStorage.getItem("cellVals");
-      return saved ? JSON.parse(saved) : {};
-    } catch {
-      return {}   
-    }
-  });
+      if (saved) setCellValues(JSON.parse(saved));
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("correctCells");
+      if (saved) setCorrectCells(new Set(JSON.parse(saved)));
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("incorrectCells");
+      if (saved) setIncorrectCells(new Set(JSON.parse(saved)));
+    } catch {}
+  }, []);
+
   //Scroll clues on sidebar whenever activeCell / Orientation changes
   useEffect(() => {
     if (!activeCell) return;
@@ -55,6 +71,15 @@ export default function Home() {
   useEffect( () => {
     localStorage.setItem("cellVals", JSON.stringify(cellValues))
   }, [cellValues])
+
+  useEffect( () => {
+    localStorage.setItem("correctCells", JSON.stringify([...correctCells]));
+  }, [correctCells])
+
+  useEffect( () => {
+    localStorage.setItem("incorrectCells", JSON.stringify([...incorrectCells]));
+  }, [incorrectCells])
+
 
   const clueStartMap = new Map<string, number>();
   [...puzzle.clues.across, ...puzzle.clues.down].forEach(clue => {
@@ -238,7 +263,7 @@ const getFirstCell = (
                 // contentEditable={!cell.isBlack ? true : false} 
                 
                 style={{
-                  // backgroundColor: activeCellId === cell.id ? "#f9dc4a" : "transparent",
+                  // backgroundColor: activeCellId === ceasdfll.id ? "#f9dc4a" : "transparent",
                   width:"48px", 
                   height: "33px", 
                   marginLeft: "1px",
@@ -249,6 +274,11 @@ const getFirstCell = (
                   caretColor: "transparent", 
                   outline: "none",
                   textTransform: "uppercase",
+                  color: incorrectCells.has(cell.id) 
+                    ? "red" 
+                    : correctCells.has(cell.id) 
+                    ? "#2455D2"
+                    : "black"
                   
                 }}
             />
@@ -381,6 +411,7 @@ const getFirstCell = (
 
   const handleKey = (e: React.KeyboardEvent<HTMLInputElement>, cell: typeof cells[0]) => {
     
+
     if(e.metaKey || e.ctrlKey) return;
     console.log(e.key)
     if (e.key === " ") {
@@ -389,8 +420,18 @@ const getFirstCell = (
     }
     if (e.key.length === 1 && /[a-zA-Z]/.test(e.key)) {
       e.preventDefault();
+
+      if(correctCells.has(cell.id)) return;
+
       const value = e.key.toUpperCase();
       setCellValues(prev => ({ ...prev, [cell.id]: value }));
+      setIncorrectCells(
+        prev => {
+          const next = new Set(prev); 
+          next.delete(cell.id); 
+          return next;
+        });
+
       if(activeOrientation === "across") {
         moveCell(cell, "right");
       } else {
@@ -399,6 +440,11 @@ const getFirstCell = (
     }
     if(e.key == "Backspace") {
       e.preventDefault()
+
+      if(correctCells.has(cell.id)) {
+        moveCell(cell, activeOrientation === "across" ? "left" : "up");
+        return;
+      }
 
       console.log(cell.id)
       console.log(cellValues[cell.id])
@@ -411,7 +457,11 @@ const getFirstCell = (
         );
 
         if(prevCell) {
-          setCellValues(prev => ({...prev, [prevCell.id]: ""}))
+
+          if(!correctCells.has(prevCell.id)) {
+            setCellValues(prev => ({...prev, [prevCell.id]: ""}))
+          }
+
           moveCell(cell, "left");
         }
 
@@ -421,7 +471,9 @@ const getFirstCell = (
         );
 
         if(prevCell) {
-          setCellValues(prev => ({...prev, [prevCell.id]: ""}))
+          if(!correctCells.has(prevCell.id)) {
+            setCellValues(prev => ({...prev, [prevCell.id]: ""}))
+          }
           moveCell(cell, "up");
         }
       }
@@ -534,7 +586,7 @@ const getFirstCell = (
           c => c.col == currentCell.col - 1 && c.row == currentCell.row
         );
 
-        while(nextCell?.isBlack && currentCell.col >= 0 && nextCell) {
+        while(nextCell?.isBlack && nextCell.col >= 0 && nextCell) {
           nextCell = cells.find(
             c => c.col == nextCell.col - 1 && c.row == currentCell.row
           );
@@ -545,7 +597,7 @@ const getFirstCell = (
           c => c.col == currentCell.col + 1 && c.row == currentCell.row
         );
 
-        while(nextCell?.isBlack && currentCell.col < puzzle.meta.width && nextCell) {
+        while(nextCell?.isBlack && nextCell.col < puzzle.meta.width && nextCell) {
           nextCell = cells.find(
             c => c.col == nextCell.col + 1 && c.row == currentCell.row
           );
@@ -556,7 +608,7 @@ const getFirstCell = (
           c => c.col == currentCell.col && c.row == currentCell.row - 1
         );
 
-        while(nextCell?.isBlack && currentCell.row >= 0 && nextCell)
+        while(nextCell?.isBlack && nextCell.row >= 0 && nextCell)
           nextCell = cells.find(
             c => c.col == currentCell.col && c.row == nextCell.row - 1
           )
@@ -566,7 +618,7 @@ const getFirstCell = (
           c => c.col == currentCell.col && c.row == currentCell.row + 1
         );
 
-        while(nextCell?.isBlack && currentCell.row < puzzle.meta.height) {
+        while(nextCell?.isBlack && nextCell.row < puzzle.meta.height) {
           nextCell = cells.find(
             c => c.col == currentCell.col && c.row == nextCell.row + 1
           );
@@ -588,19 +640,88 @@ const getFirstCell = (
   const clueText = activeOrientation == "across"
     ? cluesAcross.find(cl => cl.number == activeCell?.acrossClueNum)?.clue
     : cluesDown.find(cl => cl.number == activeCell?.downClueNum)?.clue
-  
+
   const clueLabel = activeCell
-    ? (activeOrientation === "across" ? activeCell.acrossClueNum + "A" : activeCell.downClueNum + "D")
+    ? activeOrientation === "across" && activeCell.acrossClueNum != null 
+      ? `${activeCell.acrossClueNum}A`
+      : activeCell.downClueNum != null
+      ? `${activeCell.downClueNum}D`
+      : null  
     : null;
 
   const gridHeight = puzzle.meta.height * 50
+
+  const handleMenuClick = (label: string) => {
+    switch (label) {
+      case "Clear":
+        setCellValues({}); 
+        localStorage.removeItem("cellVals");
+
+        setCorrectCells(new Set());
+        localStorage.removeItem("correctCells");
+
+        setIncorrectCells(new Set());
+        localStorage.removeItem("incorrectCells")
+        break;
+      case "Reveal":
+        alert("not yet :(")
+        console.log(activeCell?.acrossClueNum)
+        break;
+      case "Check": 
+        const wordCells = cells.filter(c => 
+          activeOrientation === "across"
+            ? c.acrossClueNum === activeCell?.acrossClueNum 
+            : c.downClueNum === activeCell?.downClueNum
+        );
+
+        const wrongCells = wordCells.filter(c => 
+          cellValues[c.id] && (cellValues[c.id] !== c.solution)
+        );
+
+        const rightCells = wordCells.filter(c =>
+          cellValues[c.id] && (cellValues[c.id] == c.solution)
+        );
+
+        setIncorrectCells(prev => new Set([...prev, ...wrongCells.map(c => c.id)]));
+        setCorrectCells(prev => new Set([...prev, ...rightCells.map(c => c.id)]));
+
+
+        console.log(wrongCells)
+        break;
+      default:
+        break;
+    }
+
+    inputRefs.current[activeCell?.id ?? ""]?.focus();
+
+  }
+
   return (
     
     <div>
       <main>
+      <div style={{margin: "40px 50px 0px 40px", width: "fit-content"}}>
+
+        <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "center", borderBottom: "1px solid #e0e0e0", padding: "10px 0px", gap: "24px", backgroundColor: "white" }}>
+          {["Clear", "Reveal", "Check"].map(label => (
+            <button 
+              key={label} 
+              onClick={() => handleMenuClick(label)}
+              onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#f0f0f0")}
+              onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
+              style={{ 
+                background: "none", border: "none", 
+                fontSize: "14px", fontWeight: "500", color: "#333", 
+                cursor: "pointer", fontFamily: "inherit",
+                borderRadius: "4px", padding: "8px 12px"
+              }}
+
+            >{label}</button>
+          ))}
+        </div>
 
         <div style={{display: "flex"}}>
-          <div style={{margin: "40px 50px 0px 40px", width: "fit-content"}}>
+          <div style={{margin: "30px 50px 0px 40px", width: "fit-content"}}>         
             <div style={{
               backgroundColor: "#deedf6",
               padding: "16px 20px",
@@ -635,22 +756,23 @@ const getFirstCell = (
             </div>
           </div>
 
-          <div style={{marginTop: "40px"}} >
+          <div style={{marginTop: "30px"}} >
             <h3 style={{textAlign: "left", paddingLeft: "14px"}}><b>ACROSS</b></h3>
             <hr style={{color: "lightgray"}}></hr>
             <ol style={{overflowY: "scroll", height: `${gridHeight+40}px`, overflowX: "hidden", width: "300px"}}>
               <li>{divsAcross}</li>
             </ol>
           </div>
-          <div style={{marginLeft: "30px", marginTop: "40px"}}>
+          <div style={{marginLeft: "30px", marginTop: "30px"}}>
             <h3 style={{textAlign: "left", paddingLeft: "14px"}}><b>DOWN</b></h3>
             <hr style={{color: "lightgrey"}}></hr>
-            <ol style={{overflowY: "scroll", height: `${gridHeight+40}px`, overflowX: "hidden", width: "300px"}}>
+            <div style={{overflowY: "scroll", height: `${gridHeight+40}px`, overflowX: "hidden", width: "300px"}}>
               <li>{divsDown}</li>
-            </ol>
+            </div>
           </div> 
 
         </div>
+      </div>
 
 
 
